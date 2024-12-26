@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-app
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./vendor:/var/www/html/vendor
+    ports:
+      - "8080:80"  # Expose port 8080
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ecoding_student
+      MYSQL_USER: root
+      MYSQL_PASSWORD: KimLongKun@123Ecoding
+      MYSQL_ROOT_PASSWORD: root  # Ensure root password matches the one in phpmyadmin
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root  # Make sure this matches the MYSQL_ROOT_PASSWORD of MySQL
+    ports:
+      - "8081:80"
+
+volumes:
+  db-data:
